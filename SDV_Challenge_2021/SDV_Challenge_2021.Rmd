@@ -1,0 +1,52 @@
+---
+title: "SDV Challenge 2021"
+author: "Pascal van Luit"
+date: "19/01/2021"
+output: html_document
+---
+
+# SDV Challenge 2021: how fit(bit) are you?
+
+
+## Description
+In this R challenge we challenge you to come up with a nice visual on people's moving behavior.
+
+According to the ACSM guidelines, adults should perform 150-300 minutes of moderate intensity activity or 75-150 minutes of vigorous activity per week. Fitbit classifies active minutes based on the Metabolic Equivalents (METs), which is the calories you burn relative to the calories you burn in rest.
+
+        = 3 METs indicates moderate-intensity exercise (fitbit.minutes_fairly_active)
+
+        = 6 METs indicates vigorous-intensity exercise (fitbit.minutes_very_active)
+
+Fitbit itself also argues that people have to move 150 minutes a week (22 minutes a day) in order to meet the guidelines. However, fitbit calculates these movement minutes slighly different: you can earn 1 "movement minute" for every minute you were "fairly active" and 2 "movement minutes" for every minute you were very active.
+
+The challenge of this month is to come up with a nice visual that shows a fitbit user whether he or she met the ACSM or fitbit movement guidelines.
+
+For this challenge you can use or own fitbit data or the data set we made available. This last data set consists of fitbit data of the last three months of one of our users.
+
+### Preparation
+```{r setup, message=FALSE}
+library(tidyverse)
+library('httr')
+library("dplyr")
+library("tidyr")
+library("lubridate")
+data <- read_csv('fitbit_data.csv')
+```
+
+## Part One: Adherence to ACSM Guidelines
+
+Let's first start to inspect how well this person adheres to the ACSM guidelines, by visualizing the amount of moderate and vigorous intensity activity.
+```{r}
+#Turning daily data into weekly data:
+week <- as.Date(cut(data$day, "week"))
+
+week_data <- aggregate(fitbit.minutes_fairly_active ~ week, data, sum) #
+fitbit.minutes_very_active <- aggregate(fitbit.minutes_very_active ~ week, data, sum)
+week_data$fitbit.minutes_very_active <- fitbit.minutes_very_active$fitbit.minutes_very_active
+
+
+
+week_data %>% ggplot(aes(x = week, y = fitbit.minutes_fairly_active)) +
+  geom_point()
+```
+
